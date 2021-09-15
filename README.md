@@ -70,130 +70,91 @@ residual mean and variance.
 
 ![11](https://user-images.githubusercontent.com/90756113/133444158-6c1cb909-4273-484b-b03b-1b6b99f46115.PNG)
 
-What can we say from these results? First of all, we know that a White Noise process has 0 mean and a variance which is constant over time. From this point of view, the estimates are quite satisfactory. Indeed, the only issue regards the variance, since we spot periods of high volatility and periods of low volatility, which seems to change over time, but for the moment assume it is fine. We notice also that the variance seems to be very high. To check if it is true we can compute the coefficient of variation, which is CV = ơ/µ. We get a value of about 34. As a rule of thumb, a CV > 1 means that the process has a relatively high variance. 
-. 
-Even the estimated ACF and PACF are extremely good. In particular, we know that a WN process has an ACF 
-and a PACF which are equal to 1 at lag 0, and then are constantly equal to 0. Here, we see that the first lags, 
-which are the most reliable ones, are extremely close to 0. Moreover, also subsequent lags are really small 
-and only few of them exceed the boundaries. This is probably due to some kind of estimation error, in 
-other words, considering the length of the time series we can assume that it is due to chance. 
-Altogether we are satisfied with the result. Then, not only the model seems to fit the data properly, but 
-also its residuals behave quite well. At this point, we can check other properties of the residuals, in 
-particular it is interesting to investigate if they are normally distributed, meaning if the process is a 
-Gaussian White Noise (GWN). In order to do that, we rely on the QQ plot to perform a graphical analysis
-and on a hypothesis test to conduct a formal analysis.
+What can we say from these results? First of all, we know that a White Noise process has 0 mean and a variance which is constant over time. From this point of view, the estimates are quite satisfactory. Indeed, the only issue regards the variance, since we spot periods of high volatility and periods of low volatility, which seems to change over time, but for the moment assume it is fine. We notice also that the variance seems to be very high. To check if it is true we can compute the coefficient of variation, which is CV = ơ/µ. We get a value of about 34. As a rule of thumb, a CV > 1 means that the process has a relatively high variance. This is not surprising considering the changes of the variance we have already spotted.
+
+Even the estimated ACF and PACF are extremely good. In particular, we know that a WN process has an ACF and a PACF which are equal to 1 at lag 0, and then are constantly equal to 0. Here, we see that the first lags, which are the most reliable ones, are extremely close to 0. Moreover, also subsequent lags are really small and only few of them exceed the boundaries. This is probably due to some kind of estimation error, in other words, considering the length of the time series we can assume that it is due to chance. 
+
+Altogether we are satisfied with the result. Then, not only the model seems to fit the data properly, but also its residuals behave quite well. At this point, we can check other properties of the residuals, in particular it is interesting to investigate if they are normally distributed, meaning if the process is a Gaussian White Noise (GWN). In order to do that, we rely on the QQ plot to perform a graphical analysisand on a hypothesis test to conduct a formal analysis.
+
 ![12](https://user-images.githubusercontent.com/90756113/133444205-b9d73148-4efe-4057-ae61-1bb8507f877d.png)
-With the QQ plot we compare the theoretical quantiles of the standardized normal distribution with the 
-empirical observed quantiles, therefore the more the points are aligned on the line the more likely the 
-process generating the data is normally distributed. In this case we are not sure about the result, so it is 
+
+With the QQ plot we compare the theoretical quantiles of the standardized normal distribution with the empirical observed quantiles, therefore the more the points are aligned on the line the more likely the process generating the data is normally distributed. In this case we are not sure about the result, so it is 
 better to rely on a formal test.
+
 ![13](https://user-images.githubusercontent.com/90756113/133444291-b8beabd3-d128-417b-82d1-334f23d33aa6.PNG)
 
-The Jarque-Bera test is a test for normality. Since the p-value is extremely small we reject H0 and conclude 
-that the process is not normally distributed9
-. 
-At this point we have a model which seems to fit the data properly, and we have investigated the residuals 
-which may be considered a white noise process if we exclude the changes in volatility. Therefore, we can 
-compute some forecast. 
-As already mentioned, we use the observed time series, which is the first sub-sample, as a sort of training 
-data set, meaning that it is used to teach the process about the model generating the data. Then we 
-compute a forecast and by relying on the second sub-sample, which represents the real observed data for 
-the forecast horizon, we assess the goodness of the prediction. 
-In order to better evaluate the prediction, I decided to rely on two different functions of R: the function 
-forecast, and the function predict.
-The following plots show the provided results
+The Jarque-Bera test is a test for normality. Since the p-value is extremely small we reject H0 and conclude that the process is not normally distributed. The problem is that this test assumes the observations to be independent so it may not work properly if there is some sort of dependence among them. Since we have only found that the results seems to be uncorrelated, we must be careful.
+
+At this point we have a model which seems to fit the data properly, and we have investigated the residuals which may be considered a white noise process if we exclude the changes in volatility. Therefore, we can compute some forecast. 
+As already mentioned, we use the observed time series, which is the first sub-sample, as a sort of training data set, meaning that it is used to teach the process about the model generating the data. Then we compute a forecast and by relying on the second sub-sample, which represents the real observed data for the forecast horizon, we assess the goodness of the prediction. 
+
+In order to better evaluate the prediction, I decided to rely on two different functions of R: the function forecast, and the function predict.
+
+The following plots show the provided results.
 
 ![14](https://user-images.githubusercontent.com/90756113/133444393-988f129e-c31f-42b6-8000-4b43f90f2526.png)
-![15](https://user-images.githubusercontent.com/90756113/133444411-aeb2ee4f-52c7-4437-aea3-c0687c449a33.png)
-The plots are slightly different, but we can say that they are almost the same. As we can see we get a more 
-or less constant prediction but despite of the appearance the forecast is pretty good. Indeed, the prediction 
-error is quite small, and all the values lie inside the boundaries10
-. Moreover, we notice that the confidence 
-interval does not increase significantly over time, this is a confirmation of the fact that the process may 
-really be stationary. Indeed, if it was not the case, the prediction interval should increase as the forecast 
-horizon increases. 
-Finally, we can analyze the volatility and the fact that it seems to change over time. During the paper we 
-have noticed that the process seems to have a variance which is not constant, in particular, it is possible to 
-detect periods of high volatility and periods of low volatility. We already know that if the process is non 
-stationary we are not able to deal with it, therefore it is crucial to understand if the process is truly 
-heteroskedastic, and in that case we are not able to overcome the problem and all the estimates, the 
-forecasts and the inference we have done are meaningless, or if the process is conditionally 
-heteroskedastic, meaning that the process is still stationary but its squared residuals are autocorrelated 
-and they can be represented with a more complex model. 
 
-Let us start by having a look at the following plots:![16](https://user-images.githubusercontent.com/90756113/133444532-4817147c-e0a0-476c-8b6f-f54f5a845c37.png)
-Thanks to these graphs we can analyze in a clearer way the volatility. Particularly, in the first plot we see 
-the behavior of the squared residuals and the fact its variability changes over time. Indeed, there are 
-periods characterized by high peaks and periods with an extremely small volatility. In the second plot it is 
-possible to observe the ACF of the squared residuals. We can spot some significant correlated coefficients 
-even in small lags. This is something we definitely do not like. Finally, in the third plot we observe that all 
-the p-values of the McLeod-Li test lie below the significance level, meaning that there is autocorrelation in 
+![15](https://user-images.githubusercontent.com/90756113/133444411-aeb2ee4f-52c7-4437-aea3-c0687c449a33.png)
+
+The plots are slightly different, but we can say that they are almost the same. As we can see we get a more or less constant prediction but despite of the appearance the forecast is pretty good. Indeed, the prediction error is quite small, and all the values lie inside the boundaries. The errors are about ±2% and the Mean Error (ME), computed using the function accuracy, is about 0.0016 which is an extremely good value (remember: the closer to 0 the better it is). Moreover, we notice that the confidence interval does not increase significantly over time, this is a confirmation of the fact that the process may really be stationary. Indeed, if it was not the case, the prediction interval should increase as the forecast horizon increases.
+
+Finally, we can analyze the volatility and the fact that it seems to change over time. During the paper we have noticed that the process seems to have a variance which is not constant, in particular, it is possible to detect periods of high volatility and periods of low volatility. We already know that if the process is non 
+stationary we are not able to deal with it, therefore it is crucial to understand if the process is truly heteroskedastic, and in that case we are not able to overcome the problem and all the estimates, the forecasts and the inference we have done are meaningless, or if the process is conditionally heteroskedastic, meaning that the process is still stationary but its squared residuals are autocorrelated and they can be represented with a more complex model. 
+
+Let us start by having a look at the following plots:
+
+![16](https://user-images.githubusercontent.com/90756113/133444532-4817147c-e0a0-476c-8b6f-f54f5a845c37.png)
+
+Thanks to these graphs we can analyze in a clearer way the volatility. Particularly, in the first plot we see the behavior of the squared residuals and the fact its variability changes over time. Indeed, there are periods characterized by high peaks and periods with an extremely small volatility. In the second plot it is possible to observe the ACF of the squared residuals. We can spot some significant correlated coefficients even in small lags. This is something we definitely do not like. Finally, in the third plot we observe that all the p-values of the McLeod-Li test lie below the significance level, meaning that there is autocorrelation in 
 the squared residuals. 
-So far, we have said that the model fitting is satisfactory, and the standardized residuals behave well, but 
-there is a sort of strange behavior in the squared residuals. Then, the only thing we can do is to try to refine 
-the model to account for these volatility clusters by adding an ARCH/GARCH component. If we are not able 
-to do this the model is useless. Therefore, we have to detect the best model for the squared residuals. 
+
+So far, we have said that the model fitting is satisfactory, and the standardized residuals behave well, but there is a sort of strange behavior in the squared residuals. Then, the only thing we can do is to try to refine the model to account for these volatility clusters by adding an ARCH/GARCH component. If we are not able to do this the model is useless. Therefore, we have to detect the best model for the squared residuals. 
+
 The result is shown in the table below:
+
 ![17](https://user-images.githubusercontent.com/90756113/133444596-53e4a6a0-f2e2-4c14-8a14-1d8cdf0a4bd2.PNG)
 
-It means that the model we fit to the squared residuals is an ARMA (1, 1). This is really good since as a rule 
-of thumb we should at first start considering an ARCH (1, 1) component and then, only if the model fitting is 
-not satisfactory, increase the order. This because by adding too many parameters there may arise some 
-problems
-Now, we have to check if the model fitting is satisfactory. As usual, we have to analyze the behavior of the 
-standardized residuals of the fitted model.
+It means that the model we fit to the squared residuals is an ARMA (1, 1). This is really good since as a rule of thumb we should at first start considering an ARCH (1, 1) component and then, only if the model fitting is not satisfactory, increase the order. This because by adding too many parameters there may arise some 
+problems.
+
+Now, we have to check if the model fitting is satisfactory. As usual, we have to analyze the behavior of the standardized residuals of the fitted model.
+
 ![18](https://user-images.githubusercontent.com/90756113/133444729-7b707822-8205-4f2e-9f78-6d8a69ee6e80.png)
 
-From these results, we can conclude that the model fitting is acceptable. Indeed, we are considering a long 
-time series and the squared residuals; therefore, it makes sense that there may be some estimation errors 
-which can affect the results even in a stronger way than before. Then, to keep the model as parsimonious 
-as possible it makes sense to accept this representation.
-At this point we have all what we need: the fitted model and the ARCH component, so we can define the
-refined model. In particular, the selected model is an ARIMA (1, 0, 3)/ARCH (1, 1). 
-The following image shows the output of the R code:![19](https://user-images.githubusercontent.com/90756113/133444799-5941b640-1c6c-4371-bbbb-5a95f2b76008.PNG)
+From these results, we can conclude that the model fitting is acceptable. Indeed, we are considering a long time series and the squared residuals; therefore, it makes sense that there may be some estimation errors which can affect the results even in a stronger way than before. Then, to keep the model as parsimonious as possible it makes sense to accept this representation. 
+
+At this point we have all what we need: the fitted model and the ARCH component, so we can define the refined model. In particular, the selected model is an ARIMA (1, 0, 3)/ARCH (1, 1). 
+
+The following image shows the output of the R code:
+
+![19](https://user-images.githubusercontent.com/90756113/133444799-5941b640-1c6c-4371-bbbb-5a95f2b76008.PNG)
 ![19b](https://user-images.githubusercontent.com/90756113/133444823-701672d9-7fe6-4366-9613-3b63976295ad.PNG)
 
-As we can see this is a very long output showing all the estimates of the parameters, both the ones of the 
-ARIMA and the ones of the ARCH, with the associated errors. Moreover, we see other useful information 
-provided by different tests. For instance, in this case we see that we reject the null hypothesis of the 
-Jarque-Bera test, therefore we can say that the model is not normally distributed. 
+As we can see this is a very long output showing all the estimates of the parameters, both the ones of the ARIMA and the ones of the ARCH, with the associated errors. Moreover, we see other useful information provided by different tests. For instance, in this case we see that we reject the null hypothesis of the Jarque-Bera test, therefore we can say that the model is not normally distributed. 
+
 Additional information are provided by the following plots: 
+
 ![20](https://user-images.githubusercontent.com/90756113/133444925-4e813da2-d5c8-4f58-94f8-d0068b9fa7d4.png)
 
-In particular, in the first plot we see the time series and some bounds which are computed relying on the 
-conditional volatility12. As we can notice, periods of high volatility are characterized by higher estimated 
-standard deviations which means the interval boundaries are wider.
-Then we see the standardized residuals and the ACF of the standardized residuals and the one of the 
-squared residuals. Basically, these results tell us that both they are not autocorrelated. It is extremely good.
-In this case what is not fully satisfactory is the last plot which shows the QQ plot of the standardized 
-residuals. As we can see, they do not seem to be normally distributed since there are fat tails. Therefore, 
-we can try to improve the model by changing the normality assumption. 
-In particular, the next table shows the results when we assume the distribution to be sstd, namely skew 
-student t distribution.
+In particular, in the first plot we see the time series and some bounds which are computed relying on the conditional volatility12. As we can notice, periods of high volatility are characterized by higher estimated standard deviations which means the interval boundaries are wider. Then we see the standardized residuals and the ACF of the standardized residuals and the one of the squared residuals. Basically, these results tell us that both they are not autocorrelated. It is extremely good.
+
+In this case what is not fully satisfactory is the last plot which shows the QQ plot of the standardized residuals. As we can see, they do not seem to be normally distributed since there are fat tails. Therefore, we can try to improve the model by changing the normality assumption. In particular, the next table shows the results when we assume the distribution to be sstd, namely skew student t distribution.
 
 ![21](https://user-images.githubusercontent.com/90756113/133444997-5c7a7cc7-3bf1-4931-91a4-23378cd78649.PNG)
 ![21b](https://user-images.githubusercontent.com/90756113/133445004-d22978ba-2c00-4497-a9f1-10561b6d5699.PNG)
+
 ![22](https://user-images.githubusercontent.com/90756113/133445034-09749263-2b60-4368-a9fb-075a6bd0c63d.png)
-At the end we can conclude that we have more or less the same results. What really changes is the QQ plot 
-which now behaves much better since almost all the points are aligned on the line. This means that by 
-changing the conditional distribution we have been able to improve the model fitting and that the sstd
-distribution probably fits the data in a better way than the normal distribution.
-The last thing left to do is to compute again the forecast by using the new refined model to see if it 
-improved. In particular, since the model with the sstd distribution performs better we will rely on it. ![23](https://user-images.githubusercontent.com/90756113/133445129-254c96f2-d27b-403d-95b2-14e0a441d044.png)
 
+At the end we can conclude that we have more or less the same results. What really changes is the QQ plot which now behaves much better since almost all the points are aligned on the line. This means that by changing the conditional distribution we have been able to improve the model fitting and that the sstd distribution probably fits the data in a better way than the normal distribution.
 
+The last thing left to do is to compute again the forecast by using the new refined model to see if it improved. In particular, since the model with the sstd distribution performs better we will rely on it. 
 
-
+![23](https://user-images.githubusercontent.com/90756113/133445129-254c96f2-d27b-403d-95b2-14e0a441d044.png)
 ![24](https://user-images.githubusercontent.com/90756113/133445158-231048da-483f-409d-a01a-7c3d7892a2ab.PNG)
 
-The plot and the table above show the forecast computed with the conditional variance, meaning the 
-variance computed keeping into account the past information. We immediately notice that all the values lie 
-in the confidence interval and, as in the previous cases, the prediction is more or less a constant line.
+The plot and the table above show the forecast computed with the conditional variance, meaning the variance computed keeping into account the past information. We immediately notice that all the values lie in the confidence interval and, as in the previous cases, the prediction is more or less a constant line.
 
 ![25](https://user-images.githubusercontent.com/90756113/133445224-5f8197c3-9969-4b9e-b658-e4103754cc98.png)
 ![26](https://user-images.githubusercontent.com/90756113/133445250-6dc2007d-4274-4d53-8806-ce35125bf145.PNG)
-Here we have the same graphs but computed relying on the unconditional variance. What is strange is that 
-theoretically the conditional variance has to provide safer predictions, meaning wider intervals, but in this 
-case, it is the opposite. However, by looking at the errors we see that the unconditional forecast has a 
-higher error than the conditional one. In any case, both predictions perform quite well since alle the 
-observations lie in the confidence interval and the estimation errors are very small
+
+Here we have the same graphs but computed relying on the unconditional variance. What is strange is that theoretically the conditional variance has to provide safer predictions, meaning wider intervals, but in this case, it is the opposite. However, by looking at the errors we see that the unconditional forecast has a higher error than the conditional one. In any case, both predictions perform quite well since alle the observations lie in the confidence interval and the estimation errors are very small.

@@ -1,108 +1,76 @@
 # NFLX-time-series-analysis
-The aim of the project is to perform a detailed analysis of the Netflix time series. In particular, we have to 
-focus on the daily closing price. 
-After having downloaded the multivariate time series1
-, we are ready to start.
+The aim of the project is to perform a detailed analysis of the Netflix time series focusing on the daily closing price. 
 The first thing to do is to plot the time series, its estimated autocorrelation function and its estimated 
 partial autocorrelation function, in order to perform a preliminary graphical analysis.
+
 ![1](https://user-images.githubusercontent.com/90756113/133443302-93e7b2be-c068-47e2-b240-c09ed688f5d9.png)
-As we can see the data are not satisfactory for our purposes. First of all, the time series seems to be 
-nonstationary, indeed we can detect a sort of random behavior and there seem to be periods of low 
-volatility and periods of high volatility2
-. Moreover, the sample ACF is not acceptable3
-. 
-This kind of behavior is typical of a random walk which is a process characterized by a strong persistence in 
-the ACF. The problem is that if we are dealing with a nonstationary stochastic process all our estimates and 
-predictions are useless. 
-However, to have more precise information, we need to rely on a formal test to investigate the stationarity 
-of the process. In particular, we will use the Augmented Dickey-Fuller test. 
-This hypothesis test considers as null hypothesis the presence of a unit root, meaning the non-stationarity 
-of the process, therefore our aim is to reject it.
+
+As we can see the data are not satisfactory for our purposes. First of all, the time series seems to be nonstationary, indeed we can detect a sort of random behavior and there seem to be periods of low volatility and periods of high volatility. For instance, we can consider the period between February 2018 and July 2018 and compare it with the corresponding period of the year 2019. By doing so, we immediately notice the change in the behaviour of the volatility of the stock price. Moreover, while the PACF seems quite good, the sample ACF is not acceptable, meaning that it is possible to spot a strong and persistent autocorrelation which appears to be statistically significant.
+
+This kind of behavior is typical of a random walk which is a process characterized by a strong persistence in the ACF. The problem is that if we are dealing with a nonstationary stochastic process all our estimates and predictions are useless and the model must be discarded. 
+
+However, to have more precise information, we need to rely on a formal test to investigate the stationarity of the process. In particular, we will use the Augmented Dickey-Fuller test. This hypothesis test considers as null hypothesis the presence of a unit root, meaning the non-stationarity of the process, therefore our aim is to reject it.
+
 The following table shows the result of the formal test:
+
 ![2](https://user-images.githubusercontent.com/90756113/133443416-cc4d5f07-2d46-4988-b279-50ded3781d7d.PNG)
-How do we read this table? It is quite straightforward; the variables of interest are the p-value and the test 
-statistic. We look at them and make a comparison with the critical values and the fixed significance level. 
-Since the p-value is about 9%, considering a 5% or a 1% significance level, we fail to reject the null 
-hypothesis, meaning that the process is nonstationary. The same if we consider the observed test statistic. 
-Since the ADF statistic is a negative number, considering the 0.7813 observed value, which is higher than all 
-the critical values, we do not reject H0, again the process does not seem stationary.
-Therefore, the process appears to be nonstationary; any further analysis will be meaningless. It means that
-we need to find a proper transformation of the data in order to deal with it, otherwise we cannot overcome 
-the problem and we cannot rely on the analysis.
-In the provided R code, it is possible to see that the suggested transformation consists in taking the first 
-difference of the time series; in other words, we are differentiating the process.
+
+How do we read this table? It is quite straightforward; the variables of interest are the p-value and the test statistic. We look at them and make a comparison with the critical values and the fixed significance level. Since the p-value is about 9%, considering a 5% or a 1% significance level, we fail to reject the null 
+hypothesis, meaning that the process is nonstationary. The same if we consider the observed test statistic. Since the ADF statistic is a negative number, considering the 0.7813 observed value, which is higher than all the critical values, we do not reject H0, again the process does not seem stationary.
+
+Therefore, the process appears to be nonstationary; any further analysis will be meaningless. It means that we need to find a proper transformation of the data in order to deal with it, otherwise we cannot overcome the problem and we cannot rely on the analysis.
+In the code, it is possible to see that the suggested transformation consists in taking the first difference of the time series; in other words, we are differentiating the process.
 
 ![3](https://user-images.githubusercontent.com/90756113/133443478-708f81b6-185c-4d2d-bb67-ac47e57f14ee.PNG)
-In this case the results are quite satisfactory. In particular, we observe both an extremely small p-value and 
-a very negative test statistic, greater in absolute value than the critical values. This means that thanks to 
-the applied transformation the new time series appears to be stationary. We have to be careful. Indeed, we 
-are not sure about this. The time series may be stationary, but we have to deeply analyze its behavior and 
-the one of the residuals to assess if this is true or not. For the moment let us assume that everything is fine. 
-Therefore, we can proceed with the analysis4
-. Before going on, it is interesting to notice that the first 
-difference of the process seems to be stationary, while the original process is not stationary. If this is the 
-case, meaning if the differentiated process is truly stationary, it means that the starting process is an 
-integrated stochastic process of order 1.
+
+In this case the results are quite satisfactory. In particular, we observe both an extremely small p-value and a very negative test statistic, greater in absolute value than the critical values. This means that thanks to the applied transformation the new time series appears to be stationary. We have to be careful. Indeed, we 
+are not sure about this. The time series may be stationary, but we have to deeply analyze its behavior and the one of the residuals to assess if this is true or not. For the moment let us assume that everything is fine. Therefore, we can proceed with the analysis. In particular, we define two sub-samples. One is used for the analysis and it can be considered as a sort of benchmark used to train the algorithm about the process generating the data, the other one is used to test the goodness of the provided forecast.
+
+Before going on, it is interesting to notice that the first difference of the process seems to be stationary, while the original process is not stationary. If this is the case, meaning if the differentiated process is truly stationary, it means that the starting process is an integrated stochastic process of order 1.
+
 ![4](https://user-images.githubusercontent.com/90756113/133443572-a67294d1-e47b-4fc8-9e0c-e8e472c5bf98.png)
+
 These are respectively the new time series, the new estimated ACF and the new estimated PACF. 
-Considering the fact that these are real data we can say that they behave really well. In particular, both the 
-ACF and the PACF decay exponentially fast and they do not seem to be truncated. This may suggest that the 
-investigated model is an ARMA process, but in order to assess this further analysis are needed.
-The problem is that even in this new time series it is possible to spot some sort of volatility clusters. The 
-question is: is this due to the presence of conditional heteroskedasticity or is it due to “real”
-heteroskedasticity? Answering this question is extremely important since in the first case we may be able 
-to manage the issue, while in the second case we cannot overcome the problem. We will answer in the 
-latter part of the paper.
-At this point we have said that, excluding for the moment the volatility issue, the process may be assumed 
-to be stationary. Therefore, we can try to find the model generating the data. 
-Two important remarks are needed. First of all, we will never be able to observe the real model generating 
-the data5
-. Secondly, we do not even know if a model generating the data exists. It means that we simply try 
-to detect a reasonable model and we investigate if it is able to fit the data in a proper way
-Using the Akaike information criterion (AIC) and the Bayesian information criterion (BIC), which are two 
-methods for model selection, the best models we find are the following ones:
+Considering the fact that these are real data we can say that they behave really well. In particular, both the ACF and the PACF decay exponentially fast and they do not seem to be truncated. This may suggest that the investigated model is an ARMA process, but in order to assess this further analysis are needed.
+
+The problem is that even in this new time series it is possible to spot some sort of volatility clusters. The question is: is this due to the presence of conditional heteroskedasticity or is it due to “real”heteroskedasticity? Answering this question is extremely important since in the first case we may be able to manage the issue, while in the second case we cannot overcome the problem. We will answer in the latter part of the paper.
+
+At this point we have said that, excluding for the moment the volatility issue, the process may be assumed to be stationary. Therefore, we can try to find the model generating the data. 
+
+Two important remarks are needed. First of all, we will never be able to observe the real model generating the data. This is true also for the parameters, meaning that we will always observe estimates and never the true parameters which are unknown and unobservable. Therefore, we will always need to provide also the estimate errors. Secondly, we do not even know if a model generating the data exists. It means that we simply try to detect a reasonable model and we investigate if it is able to fit the data in a proper way.
+
+Using the Akaike information criterion (AIC) and the Bayesian information criterion (BIC), which are two methods for model selection, the best models we find are the following ones:
+
 ![6](https://user-images.githubusercontent.com/90756113/133443843-ce679eed-b804-40df-9729-ed657e2bc494.PNG)
 
 ![7](https://user-images.githubusercontent.com/90756113/133443851-670b84a9-e023-4ec4-af4c-c153bca6adde.PNG)
-This means that the AIC suggests an ARMA (1,3) model, while the BIC provides a different model, namely a 
-White Noise (ARMA (0,0))6
-. On which one should we rely? Since we want to avoid redundancy of the 
-parameters and we aim to be as parsimonious as possible, we should choose the simplest model. However, 
-are we sure that these two models fit the data in a proper way? To answer these questions, we must rely 
-on the residual diagnostic. Indeed, by exploiting the function tsdiag it is possible to perform a graphical 
-analysis of the residual behavior.
+
+This means that the AIC suggests an ARMA (1,3) model, while the BIC provides a different model, namely a White Noise or ARMA (0,0). Since we already know that the original time series is an integrated process of order one, if we find out that the differentiated process is a WN, we can conclude that the original model should be a Random Walk. 
+Now we have two suggested models, on which one should we rely? Since we want to avoid redundancy of the parameters and we aim to be as parsimonious as possible, we should choose the simplest model. However, are we sure that these two models fit the data in a proper way? To answer these questions, we must rely on the residual diagnostic. Indeed, by exploiting the function tsdiag it is possible to perform a graphical analysis of the residual behavior.
+
 ![8](https://user-images.githubusercontent.com/90756113/133443924-c5446984-e9bf-419d-8598-604ff3fab743.png)
-We see that the model suggested by the AIC criterion performs quite well. Even if the standardized 
-residuals show the same volatility clusters we have already spotted, they seem to have 0 mean, as 
-expected. Moreover, the ACF is almost the same as the theoretical one. Lastly, the p-values from the Ljung-Box test7 are quite satisfactory. They are way above the significance level for the first lags and only from lag 
-8 on they are close to the critical threshold. In any case, since we are considering a long time series we 
-know that the test is extremely sensible and even small deviations from the null hypothesis are captured 
-and are able to affect the results even if they are not that important. Therefore, according to these results
-we can say that the model seems to fit the data properly.
-Now, consider the residuals of the model suggested by the BIC criterion
+
+We see that the model suggested by the AIC criterion performs quite well. Even if the standardized residuals show the same volatility clusters we have already spotted, they seem to have 0 mean, as expected. Moreover, the ACF is almost the same as the theoretical one. Lastly, the p-values from the Ljung-Box test are quite satisfactory. They are way above the significance level for the first lags and only from lag 8 on they are close to the critical threshold. In any case, since we are considering a long time series we know that the test is extremely sensible and even small deviations from the null hypothesis are captured and are able to affect the results even if they are not that important. Therefore, according to these results we can say that the model seems to fit the data properly.
+
+Now, consider the residuals of the model suggested by the BIC criterion.
+
 ![9](https://user-images.githubusercontent.com/90756113/133444007-ae388ca2-f1a3-484c-bc55-255b13337142.png)
-Also in this case we notice that the standardized residuals seem to have a 0 mean and again the volatility 
-changes over time. Even the ACF is almost the same as before, but what differ is the p-value from the 
-Ljung-Box test. This is an extremely important change since all the p-values are either below or close to the 
-significance level. Therefore, we can say that this model fitting appears to be not satisfactory. 
-To draw some initial conclusions, we can say that the model suggested by the BIC is extremely more 
-parsimonious than the one provided by the AIC. This is quite usual since the BIC introduces a stronger 
-penalization in order to avoid overparameterized models and redundancy. However, the residuals of the 
-BIC suggested model appear to be autocorrelated, that is why we choose to rely on the ARMA (1,3) model, 
-the one detected by the AIC, from now on. 
-Once we have chosen the model it may be useful to perform a further analysis on the residuals in order to 
-verify if they really behave like a White Noise.
+
+Also in this case we notice that the standardized residuals seem to have a 0 mean and again the volatility changes over time. Even the ACF is almost the same as before, but what differ is the p-value from the Ljung-Box test. This is an extremely important change since all the p-values are either below or close to the significance level. Therefore, we can say that this model fitting appears to be not satisfactory. 
+
+To draw some initial conclusions, we can say that the model suggested by the BIC is extremely more parsimonious than the one provided by the AIC. This is quite usual since the BIC introduces a stronger penalization in order to avoid overparameterized models and redundancy. However, the residuals of the BIC suggested model appear to be autocorrelated, that is why we choose to rely on the ARMA (1,3) model, the one detected by the AIC, from now on. 
+
+Once we have chosen the model it may be useful to perform a further analysis on the residuals in order to verify if they really behave like a White Noise.
+
 The next figures show respectively the residual time series, the residual ACF and the residual PACF, and the 
 residual mean and variance.
+
 ![10](https://user-images.githubusercontent.com/90756113/133444088-009e3f92-5dd7-4770-ade1-fbda0a214f9f.png)
 
 
 ![11](https://user-images.githubusercontent.com/90756113/133444158-6c1cb909-4273-484b-b03b-1b6b99f46115.PNG)
 
-What can we say from these results? First of all, we know that a White Noise process has 0 mean and a 
-variance which is constant over time. From this point of view, the estimates are quite satisfactory. Indeed, 
-the only issue regards the variance, since we spot periods of high volatility and periods of low volatility,
-which seems to change over time, but for the moment assume it is fine8
+What can we say from these results? First of all, we know that a White Noise process has 0 mean and a variance which is constant over time. From this point of view, the estimates are quite satisfactory. Indeed, the only issue regards the variance, since we spot periods of high volatility and periods of low volatility, which seems to change over time, but for the moment assume it is fine. We notice also that the variance seems to be very high. To check if it is true we can compute the coefficient of variation, which is CV = ơ/µ. We get a value of about 34. As a rule of thumb, a CV > 1 means that the process has a relatively high variance. 
 . 
 Even the estimated ACF and PACF are extremely good. In particular, we know that a WN process has an ACF 
 and a PACF which are equal to 1 at lag 0, and then are constantly equal to 0. Here, we see that the first lags, 

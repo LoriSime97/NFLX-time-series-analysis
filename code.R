@@ -86,6 +86,7 @@ acf(residuals, main = "Residuals ACF", ylab = '')
 pacf(residuals,  main = "Residuals Partial ACF", ylab = '')
 #we see they have more or less a 0 mean with a relatively high variance, probably due to some volatility clusters;
 #moreover both the ACF and the PACF seem to be coherent with the ones of a WN process, they are extremely close to 0 in the first lags and even in higher lags it seems reasonable
+
 #question: are they normally distributed?
 graphics.off()
 qqnorm(residuals, main = "Residuals QQ Plot")
@@ -126,6 +127,7 @@ acf(squared.residuals, main = 'ACF of Squared Residuals', ylab = '')
 #The test checks for the presence of conditional heteroskedascity by computing the Ljung-Box test with the squared data or with the squared residuals from an ARIMA model
 McLeod.Li.test(fit.model.aic, main = 'p values for McLeod-Li statistic')
 #we can assume that there is conditional heteroskedasticity, are we able to deal with it?
+
 #let's try to fit an ARCH/GARCH component to the model
 
 #first of all let's try to identify the best model for the squared residuals
@@ -136,6 +138,7 @@ print(fit.model.squared.residuals)
 tsdiag(fit.model.squared.residuals)
 #the model fitting seems to be acceptable since the p-values of the first lags, which are the most significant ones, are above the significance level
 #we can try to identify an alternative model 
+
 #fit.model.squared.residuals.aic <- auto.arima(squared.residuals, max.p = 5, max.q = 4, ic = 'aic', stationary = TRUE, seasonal = FALSE, stepwise = FALSE)
 #print(fit.model.squared.residuals.aic)
 #tsdiag(fit.model.squared.residuals.aic)
